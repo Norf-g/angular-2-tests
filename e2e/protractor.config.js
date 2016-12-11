@@ -24,8 +24,8 @@ exports.config = {
 
     params: {
         souceLab: new SauceLabs({
-            username: 'IvanKaravan',
-            password: 'ecff7333-61bc-44da-ac6d-f6524aed59e4'
+            username: 'IvanZakazmadan',
+            password: '36647d4a-ff1a-465c-9bef-4492519cf871'
         }),
         build: 'hero application final'
     },
@@ -36,7 +36,7 @@ exports.config = {
             version: '51.0',
             platform: 'Windows 10',
             name: 'Chrome v.51.0',
-            public: 'share',
+            public: 'public',
 
             //Для разделения результатов на файлы
             shardTestFiles: true
@@ -46,7 +46,7 @@ exports.config = {
             version: '54.0',
             platform: 'OS X 10.11',
             name: 'Chrome v.54.0',
-            public: 'share',
+            public: 'public',
             //Для разделения результатов на файлы
             shardTestFiles: true
         },
@@ -55,7 +55,7 @@ exports.config = {
             version: '54.0',
             platform: 'Windows 7',
             name: 'Chrome v.54.0',
-            public: 'share',
+            public: 'public',
             //Для разделения результатов на файлы
             shardTestFiles: true
         },
@@ -64,7 +64,7 @@ exports.config = {
             version: '47.0',
             platform: 'Windows 10',
             name: 'Firefox v.47.0',
-            public: 'share',
+            public: 'public',
             shardTestFiles: true
         },
         {
@@ -72,7 +72,7 @@ exports.config = {
             version: '11',
             platform: 'Windows 10',
             name: 'IE v.11.0',
-            public: 'share',
+            public: 'public',
             shardTestFiles: true
         }
     ],
