@@ -1,7 +1,7 @@
 # Angular 2
-[![Sauce Test Status](https://saucelabs.com/buildstatus/IvanKaravan)](https://saucelabs.com/u/IvanZakazmadan)
+[![Sauce Test Status](https://saucelabs.com/buildstatus/IvanZakazmadan)](https://saucelabs.com/u/IvanZakazmadan)
 
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/IvanKaravan.svg)](https://saucelabs.com/u/IvanZakazmadan)
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/IvanZakazmadan.svg)](https://saucelabs.com/u/IvanZakazmadan)
 
 
 This repository holds the TypeScript source code of the [angular.io quickstart](https://angular.io/docs/ts/latest/quickstart.html),
