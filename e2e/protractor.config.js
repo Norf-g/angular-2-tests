@@ -19,15 +19,15 @@ var SauceLabs = require('saucelabs');
 exports.config = {
     directConnect: false,
 
-    sauceUser: 'IvanKaravan',
-    sauceKey: 'ecff7333-61bc-44da-ac6d-f6524aed59e4',
+    sauceUser: 'IvanZakazmadan',
+    sauceKey: '36647d4a-ff1a-465c-9bef-4492519cf871',
 
     params: {
         souceLab: new SauceLabs({
             username: 'IvanZakazmadan',
             password: '36647d4a-ff1a-465c-9bef-4492519cf871'
         }),
-        build: 'hero application final'
+        build: 'simple'
     },
 
     multiCapabilities: [
@@ -37,7 +37,6 @@ exports.config = {
             platform: 'Windows 10',
             name: 'Chrome v.51.0',
             public: 'public',
-
             //Для разделения результатов на файлы
             shardTestFiles: true
         },
@@ -106,14 +105,14 @@ exports.config = {
       browser.ignoreSynchronization = false;	 	 
    
     // debugging
-    console.log('browser.params:' + JSON.stringify(browser.params));
-    jasmine.getEnv().addReporter(new Reporter( browser.params )) ;
+    //console.log('browser.params:' + JSON.stringify(browser.params));
+    //jasmine.getEnv().addReporter(new Reporter( browser.params )) ;
 
     // Allow changing bootstrap mode to NG1 for upgrade tests
-    global.setProtractorToNg1Mode = function() {
-      browser.useAllAngular2AppRoots = false;
-      browser.rootEl = 'html';
-    };
+    //global.setProtractorToNg1Mode = function() {
+    //  browser.useAllAngular2AppRoots = false;
+    //  browser.rootEl = 'html';
+    //};
   },
 
   jasmineNodeOpts: {
