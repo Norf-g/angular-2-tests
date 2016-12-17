@@ -14,74 +14,49 @@ var fs = require('fs');
 var path = require('canonical-path');
 var _ = require('lodash');
 var SauceLabs = require('saucelabs');
+var browserstack = require('browserstack-local');
 
 
 exports.config = {
-    directConnect: false,
 
+    'seleniumAddress': 'http://hub-cloud.browserstack.com/wd/hub',
     sauceUser: 'IvanZakazmadan',
     sauceKey: '36647d4a-ff1a-465c-9bef-4492519cf871',
 
-    params: {
-        souceLab: new SauceLabs({
-            username: 'IvanZakazmadan',
-            password: '36647d4a-ff1a-465c-9bef-4492519cf871'
-        }),
-        build: 'simple'
-    },
-
-    multiCapabilities: [
-        {
-            browserName: 'chrome',
-            version: '51.0',
-            platform: 'Windows 10',
-            name: 'Chrome v.51.0',
-            public: 'public',
-            //Для разделения результатов на файлы
-            shardTestFiles: true
+    'capabilities': {
+        'browserstack.user': 'ivan1213',
+        'browserstack.key': 'AyEDqBveLnz6YduGHGSq',
+        'browserName': 'chrome',
+        'build': 'version1',
+        'project': 'newintropage',
+        'browserstack.local': true
         },
-        {
-            browserName: 'chrome',
-            version: '54.0',
-            platform: 'OS X 10.11',
-            name: 'Chrome v.54.0',
-            public: 'public',
-            //Для разделения результатов на файлы
-            shardTestFiles: true
-        },
-        {
-            browserName: 'chrome',
-            version: '54.0',
-            platform: 'Windows 7',
-            name: 'Chrome v.54.0',
-            public: 'public',
-            //Для разделения результатов на файлы
-            shardTestFiles: true
-        },
-        {
-            browserName: 'firefox',
-            version: '47.0',
-            platform: 'Windows 10',
-            name: 'Firefox v.47.0',
-            public: 'public',
-            shardTestFiles: true
-        },
-        {
-            browserName: 'Internet Explorer',
-            version: '11',
-            platform: 'Windows 10',
-            name: 'IE v.11.0',
-            public: 'public',
-            shardTestFiles: true
-        }
-    ],
 
   // Framework to use. Jasmine is recommended.
   framework: 'jasmine2',
 
   // Spec patterns are relative to this config file
-  specs: ['**/*e2e-spec.js' ],
+  specs: ['app/*e2e-spec.js' ],
 
+    beforeLaunch: function() {
+        console.log("Connecting local");
+        return new Promise(function(resolve, reject){
+            exports.bs_local = new browserstack.Local();
+            exports.bs_local.start({'key': exports.config.capabilities['browserstack.key'] }, function(error) {
+                if (error) return reject(error);
+                console.log('Connected. Now testing...');
+
+                resolve();
+            });
+        });
+    },
+
+    // Code to stop browserstack local after end of test
+    afterLaunch: function(){
+        return new Promise(function(resolve, reject){
+            exports.bs_local.stop(resolve);
+        });
+    },
 
   // For angular tests
   useAllAngular2AppRoots: true,
@@ -128,118 +103,5 @@ exports.config = {
 
 // Custom reporter
 function Reporter(options) {
-  var _defaultOutputFile = path.resolve(process.cwd(), './_test-output', 'protractor-results.txt');
-  options.outputFile = options.outputFile || _defaultOutputFile;
-
-  initOutputFile(options.outputFile);
-  options.appDir = options.appDir ||  './';
-  var _root = { appDir: options.appDir, suites: [] };
-  log('AppDir: ' + options.appDir, +1);
-  var _currentSuite;
-
-  this.suiteStarted = function(suite) {
-    _currentSuite = { description: suite.description, status: null, specs: [] };
-    _root.suites.push(_currentSuite);
-    log('Suite: ' + suite.description, +1);
-  };
-
-  this.suiteDone = function(suite) {
-    var statuses = _currentSuite.specs.map(function(spec) {
-      return spec.status;
-    });
-    statuses = _.uniq(statuses);
-    var status = statuses.indexOf('failed') >= 0 ? 'failed' : statuses.join(', ');
-    _currentSuite.status = status;
-    log('Suite ' + _currentSuite.status + ': ' + suite.description, -1);
-  };
-
-  this.specStarted = function(spec) {
-
-  };
-
-  this.specDone = function(spec) {
-    var currentSpec = {
-      description: spec.description,
-      status: spec.status
-    };
-    if (spec.failedExpectations.length > 0) {
-      currentSpec.failedExpectations = spec.failedExpectations;
-    }
-
-    _currentSuite.specs.push(currentSpec);
-    log(spec.status + ' - ' + spec.description);
-  };
-
-  this.jasmineDone = function() {
-    outputFile = options.outputFile;
-    //// Alternate approach - just stringify the _root - not as pretty
-    //// but might be more useful for automation.
-    // var output = JSON.stringify(_root, null, 2);
-    var output = formatOutput(_root);
-    fs.appendFileSync(outputFile, output);
-  };
-
-  function ensureDirectoryExistence(filePath) {
-    var dirname = path.dirname(filePath);
-    if (directoryExists(dirname)) {
-      return true;
-    }
-    ensureDirectoryExistence(dirname);
-    fs.mkdirSync(dirname);
-  }
-
-  function directoryExists(path) {
-    try {
-      return fs.statSync(path).isDirectory();
-    }
-    catch (err) {
-      return false;
-    }
-  }
-
-  function initOutputFile(outputFile) {
-    ensureDirectoryExistence(outputFile);
-    var header = "Protractor results for: " + (new Date()).toLocaleString() + "\n\n";
-    fs.writeFileSync(outputFile, header);
-  }
-
-  // for output file output
-  function formatOutput(output) {
-    var indent = '  ';
-    var pad = '  ';
-    var results = [];
-    results.push('AppDir:' + output.appDir);
-    output.suites.forEach(function(suite) {
-      results.push(pad + 'Suite: ' + suite.description + ' -- ' + suite.status);
-      pad+=indent;
-      suite.specs.forEach(function(spec) {
-        results.push(pad + spec.status + ' - ' + spec.description);
-        if (spec.failedExpectations) {
-          pad+=indent;
-          spec.failedExpectations.forEach(function (fe) {
-            results.push(pad + 'message: ' + fe.message);
-          });
-          pad=pad.substr(2);
-        }
-      });
-      pad = pad.substr(2);
-      results.push('');
-    });
-    results.push('');
-    return results.join('\n');
-  }
-
-  // for console output
-  var _pad;
-  function log(str, indent) {
-    _pad = _pad || '';
-    if (indent == -1) {
-      _pad = _pad.substr(2);
-    }
-    console.log(_pad + str);
-    if (indent == 1) {
-      _pad = _pad + '  ';
-    }
-  }
 
 }
